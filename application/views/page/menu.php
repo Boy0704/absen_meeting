@@ -4,19 +4,26 @@
                     $sql = $this->db->get('set_absen')->row(); 
                     if ($sql->absen_datang == 'y') {
                         ?>
-                        <li>
+                       <!--  <li>
                             <a href="app/absensi_datang">Absen Datang</a>
-                        </li>
+                        </li> -->
                         <?php
                     } elseif ($sql->absen_pulang == 'y') {
                         ?>
                         
-                        <li>
+                        <!-- <li>
                             <a href="app/absensi_pulang" >Absen Pulang</a>
-                        </li>
+                        </li> -->
                         <?php
                     }
                      ?>
+
+                    <li>
+                        <a href="app/absensi_datang">Absen Datang</a>
+                    </li>
+                    <li>
+                        <a href="app/absensi_pulang" >Absen Pulang</a>
+                    </li>
                     
                     <li>
                         <a href="app/jadwal">Jadwal Rundown</a>
