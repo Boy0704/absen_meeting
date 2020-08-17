@@ -97,11 +97,11 @@
                   document.getElementById("lokasi").value = results[0].formatted_address;
 
                   <?php 
-                  $lokasi = $this->db->get('set_lokasi')->row()->lokasi;
+                  $lokasi = $this->db->get('set_lokasi')->row()->latlng;
                   $lokasi = explode(',', $lokasi);
                    ?>
 
-                  const lokasi_absen = {lat: $lokasi[0], lng: $lokasi[1]};
+                  const lokasi_absen = {lat: <?php echo $lokasi[0] ?>, lng: <?php echo $lokasi[1] ?>};
                   const lokasi_user = {lat: pos.lat, lng: pos.lng};
                   // The markers for The Dakota and The Frick Collection
                   var mk1 = new google.maps.Marker({position: lokasi_absen, map: map});

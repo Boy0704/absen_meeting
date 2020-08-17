@@ -283,12 +283,13 @@ class App extends CI_Controller {
     	$tgl = date('Y-m-d');
     	$status = '';
 		$latlng = $this->input->post('latlng');
+		$jarak = $this->input->post('jarak');
 		$lokasi = $this->input->post('lokasi');
 		$absensi = $this->input->post('absensi');
 		$npp = $this->session->userdata('npp');
 		if ($absensi == 'Datang') {
 			$qr = $this->db->get('set_lokasi')->row();
-			if ($latlng == $qr->latlng || $lokasi == $qr->lokasi) {
+			if (500 > $jarak) {
 				$ck_jam = $this->db->get('set_absen')->row();
 				if (strtotime($jam) > strtotime($ck_jam->akhir_absen_datang)) {
 					$status = 'terlambat';
@@ -481,7 +482,7 @@ class App extends CI_Controller {
 			}
 		} elseif ($absensi == 'Pulang') {
 			$qr = $this->db->get('set_lokasi')->row();
-			if ($latlng == $qr->latlng || $lokasi == $qr->lokasi) {
+			if (500 > $jarak) {
 				$ck_jam = $this->db->get('set_absen')->row();
 				if (strtotime($jam) > strtotime($ck_jam->akhir_absen_pulang)) {
 					$status = 'terlambat';
