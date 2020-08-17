@@ -274,12 +274,8 @@ class App extends CI_Controller {
 	{
 		require APPPATH.'vendor/autoload.php';
 		//set API drive
-		putenv("GOOGLE_APPLICATION_CREDENTIALS=service_akun_lagi.json");
-		$client = new Google_Client();
-		$client->setApplicationName("Client_Library_Examples");
-		$client->addScope("https://www.googleapis.com/auth/drive");
-		$client->useApplicationDefaultCredentials();
-		$service = new Google_Service_Drive($client);
+		putenv("GOOGLE_APPLICATION_CREDENTIALS=".APPPATH.'controllers/service_akun_lagi.json');
+		
 		// ----------------- //
 
 		date_default_timezone_set('Asia/Jakarta');
@@ -320,6 +316,12 @@ class App extends CI_Controller {
 					$this->db->insert('absen_datang', $data);
 
 					//proses upload ke drive api
+					$client = new Google_Client();
+					$client->setApplicationName("Client_Library_Examples");
+					$client->addScope("https://www.googleapis.com/auth/drive");
+					$client->useApplicationDefaultCredentials();
+					$service = new Google_Service_Drive($client);
+
 					$file = new Google_Service_Drive_DriveFile(array(
 			            'parents' => array('1LNsjcAoCaDujFYgpyjx5hlDcmw44OptY')
 			        ));
@@ -332,6 +334,134 @@ class App extends CI_Controller {
 			            'uploadType' => 'multipart'));
 
 			        /// ----------------- ///
+
+			        // proses simpan data google sheet
+
+			        $client = new Google_Client();
+					$client->setApplicationName("Client_Library_Examples");
+					$client->addScope([\Google_Service_Sheets::SPREADSHEETS]);
+					$client->useApplicationDefaultCredentials();
+					$sheets = new Google_Service_Sheets($client);
+
+					$data = [];
+
+					$spreadsheetId = '1hA7D-YmmKi76HetqRziNFpt7VLde6jGeGQNCc3Y0tH8'; // ubah spreadsheetId dengan spreadsheetID anda
+					$range = 'Sheet1!A2:B'; // variable untuk menyimpan range yang akan di baca, A3:H artinya, data yang akan di baca adalah kolom A sampai H dimulai dari baris 3
+					$rows = $sheets->spreadsheets_values->get($spreadsheetId, $range, ['majorDimension' => 'ROWS']);
+					if (isset($rows['values'])) {
+					    $currentRow = 1; //variable untuk menentukan baris ke
+					    foreach ($rows['values'] as $row) {
+					        if (empty($row[0])) { // Jika sudah kosong maka stop membaca data
+					            break;
+					        }
+
+					        // $data[] = [
+					        //     'col-a' => $row[0],
+					        //     'col-b' => $row[1],
+					        //     'col-c' => $row[2],
+					        //     'col-d' => $row[3],
+					        // ];
+
+					        
+
+					        $currentRow++;
+					    }
+					}
+
+					// print_r($data); //menampilkan data yang telah di baca
+					// echo json_encode($data);
+
+					//============Proses mengupdate atau menulis data===============
+					$rw = $currentRow+1;
+					        
+					$updateRange = 'A'.$rw; // variable untuk menentukan range yang akan di edit
+					$updateBody = new \Google_Service_Sheets_ValueRange([
+					    'range' => $updateRange,
+					    'majorDimension' => 'ROWS',
+					    'values' => ['values' => $absensi],
+					]); //range I2 akan di isi tanggal jika anda ingin mengisi dengan yang lain tinggal ganti date('c') dengan data yang anda inginkan
+
+					    $sheets->spreadsheets_values->update(
+					    $spreadsheetId,
+					    $updateRange,
+					    $updateBody,
+					    ['valueInputOption' => 'USER_ENTERED']
+					);
+
+					$updateRange = 'B'.$rw; // variable untuk menentukan range yang akan di edit
+					$updateBody = new \Google_Service_Sheets_ValueRange([
+					    'range' => $updateRange,
+					    'majorDimension' => 'ROWS',
+					    'values' => ['values' => $npp],
+					]); //range I2 akan di isi tanggal jika anda ingin mengisi dengan yang lain tinggal ganti date('c') dengan data yang anda inginkan
+
+					    $sheets->spreadsheets_values->update(
+					    $spreadsheetId,
+					    $updateRange,
+					    $updateBody,
+					    ['valueInputOption' => 'USER_ENTERED']
+					);
+
+					$updateRange = 'C'.$rw; // variable untuk menentukan range yang akan di edit
+					$updateBody = new \Google_Service_Sheets_ValueRange([
+					    'range' => $updateRange,
+					    'majorDimension' => 'ROWS',
+					    'values' => ['values' => $this->session->userdata('nama')],
+					]); //range I2 akan di isi tanggal jika anda ingin mengisi dengan yang lain tinggal ganti date('c') dengan data yang anda inginkan
+
+					    $sheets->spreadsheets_values->update(
+					    $spreadsheetId,
+					    $updateRange,
+					    $updateBody,
+					    ['valueInputOption' => 'USER_ENTERED']
+					);
+
+					$updateRange = 'D'.$rw; // variable untuk menentukan range yang akan di edit
+					$updateBody = new \Google_Service_Sheets_ValueRange([
+					    'range' => $updateRange,
+					    'majorDimension' => 'ROWS',
+					    'values' => ['values' => date('Y-m-d H:i:s')],
+					]); //range I2 akan di isi tanggal jika anda ingin mengisi dengan yang lain tinggal ganti date('c') dengan data yang anda inginkan
+
+					    $sheets->spreadsheets_values->update(
+					    $spreadsheetId,
+					    $updateRange,
+					    $updateBody,
+					    ['valueInputOption' => 'USER_ENTERED']
+					);
+
+
+
+					$updateRange = 'E'.$rw; // variable untuk menentukan range yang akan di edit
+					$updateBody = new \Google_Service_Sheets_ValueRange([
+					    'range' => $updateRange,
+					    'majorDimension' => 'ROWS',
+					    'values' => ['values' => $status],
+					]); //range I2 akan di isi tanggal jika anda ingin mengisi dengan yang lain tinggal ganti date('c') dengan data yang anda inginkan
+
+					    $sheets->spreadsheets_values->update(
+					    $spreadsheetId,
+					    $updateRange,
+					    $updateBody,
+					    ['valueInputOption' => 'USER_ENTERED']
+					);
+
+
+					$updateRange = 'F'.$rw; // variable untuk menentukan range yang akan di edit
+					$updateBody = new \Google_Service_Sheets_ValueRange([
+					    'range' => $updateRange,
+					    'majorDimension' => 'ROWS',
+					    'values' => ['values' => $lokasi],
+					]); //range I2 akan di isi tanggal jika anda ingin mengisi dengan yang lain tinggal ganti date('c') dengan data yang anda inginkan
+
+					    $sheets->spreadsheets_values->update(
+					    $spreadsheetId,
+					    $updateRange,
+					    $updateBody,
+					    ['valueInputOption' => 'USER_ENTERED']
+					);
+
+
 
 					?>
 					<script type="text/javascript">
@@ -379,6 +509,13 @@ class App extends CI_Controller {
 					$this->db->insert('absen_pulang', $data);
 
 					//proses upload ke drive api
+					$client = new Google_Client();
+					$client->setApplicationName("Client_Library_Examples");
+					$client->addScope("https://www.googleapis.com/auth/drive");
+					$client->useApplicationDefaultCredentials();
+					$service = new Google_Service_Drive($client);
+
+
 					$file = new Google_Service_Drive_DriveFile(array(
 			            'parents' => array('1LNsjcAoCaDujFYgpyjx5hlDcmw44OptY')
 			        ));
@@ -391,6 +528,133 @@ class App extends CI_Controller {
 			            'uploadType' => 'multipart'));
 
 			        /// ----------------- ///
+
+
+			        // proses simpan data google sheet
+
+			        $client = new Google_Client();
+					$client->setApplicationName("Client_Library_Examples");
+					$client->addScope([\Google_Service_Sheets::SPREADSHEETS]);
+					$client->useApplicationDefaultCredentials();
+					$sheets = new Google_Service_Sheets($client);
+
+					$data = [];
+
+					$spreadsheetId = '1hA7D-YmmKi76HetqRziNFpt7VLde6jGeGQNCc3Y0tH8'; // ubah spreadsheetId dengan spreadsheetID anda
+					$range = 'Sheet1!A2:B'; // variable untuk menyimpan range yang akan di baca, A3:H artinya, data yang akan di baca adalah kolom A sampai H dimulai dari baris 3
+					$rows = $sheets->spreadsheets_values->get($spreadsheetId, $range, ['majorDimension' => 'ROWS']);
+					if (isset($rows['values'])) {
+					    $currentRow = 1; //variable untuk menentukan baris ke
+					    foreach ($rows['values'] as $row) {
+					        if (empty($row[0])) { // Jika sudah kosong maka stop membaca data
+					            break;
+					        }
+
+					        // $data[] = [
+					        //     'col-a' => $row[0],
+					        //     'col-b' => $row[1],
+					        //     'col-c' => $row[2],
+					        //     'col-d' => $row[3],
+					        // ];
+
+					        
+
+					        $currentRow++;
+					    }
+					}
+
+					// print_r($data); //menampilkan data yang telah di baca
+					// echo json_encode($data);
+
+					//============Proses mengupdate atau menulis data===============
+					$rw = $currentRow+1;
+					        
+					$updateRange = 'A'.$rw; // variable untuk menentukan range yang akan di edit
+					$updateBody = new \Google_Service_Sheets_ValueRange([
+					    'range' => $updateRange,
+					    'majorDimension' => 'ROWS',
+					    'values' => ['values' => $absensi],
+					]); //range I2 akan di isi tanggal jika anda ingin mengisi dengan yang lain tinggal ganti date('c') dengan data yang anda inginkan
+
+					    $sheets->spreadsheets_values->update(
+					    $spreadsheetId,
+					    $updateRange,
+					    $updateBody,
+					    ['valueInputOption' => 'USER_ENTERED']
+					);
+
+					$updateRange = 'B'.$rw; // variable untuk menentukan range yang akan di edit
+					$updateBody = new \Google_Service_Sheets_ValueRange([
+					    'range' => $updateRange,
+					    'majorDimension' => 'ROWS',
+					    'values' => ['values' => $npp],
+					]); //range I2 akan di isi tanggal jika anda ingin mengisi dengan yang lain tinggal ganti date('c') dengan data yang anda inginkan
+
+					    $sheets->spreadsheets_values->update(
+					    $spreadsheetId,
+					    $updateRange,
+					    $updateBody,
+					    ['valueInputOption' => 'USER_ENTERED']
+					);
+
+					$updateRange = 'C'.$rw; // variable untuk menentukan range yang akan di edit
+					$updateBody = new \Google_Service_Sheets_ValueRange([
+					    'range' => $updateRange,
+					    'majorDimension' => 'ROWS',
+					    'values' => ['values' => $this->session->userdata('nama')],
+					]); //range I2 akan di isi tanggal jika anda ingin mengisi dengan yang lain tinggal ganti date('c') dengan data yang anda inginkan
+
+					    $sheets->spreadsheets_values->update(
+					    $spreadsheetId,
+					    $updateRange,
+					    $updateBody,
+					    ['valueInputOption' => 'USER_ENTERED']
+					);
+
+					$updateRange = 'D'.$rw; // variable untuk menentukan range yang akan di edit
+					$updateBody = new \Google_Service_Sheets_ValueRange([
+					    'range' => $updateRange,
+					    'majorDimension' => 'ROWS',
+					    'values' => ['values' => date('Y-m-d H:i:s')],
+					]); //range I2 akan di isi tanggal jika anda ingin mengisi dengan yang lain tinggal ganti date('c') dengan data yang anda inginkan
+
+					    $sheets->spreadsheets_values->update(
+					    $spreadsheetId,
+					    $updateRange,
+					    $updateBody,
+					    ['valueInputOption' => 'USER_ENTERED']
+					);
+
+
+
+					$updateRange = 'E'.$rw; // variable untuk menentukan range yang akan di edit
+					$updateBody = new \Google_Service_Sheets_ValueRange([
+					    'range' => $updateRange,
+					    'majorDimension' => 'ROWS',
+					    'values' => ['values' => $status],
+					]); //range I2 akan di isi tanggal jika anda ingin mengisi dengan yang lain tinggal ganti date('c') dengan data yang anda inginkan
+
+					    $sheets->spreadsheets_values->update(
+					    $spreadsheetId,
+					    $updateRange,
+					    $updateBody,
+					    ['valueInputOption' => 'USER_ENTERED']
+					);
+
+
+					$updateRange = 'F'.$rw; // variable untuk menentukan range yang akan di edit
+					$updateBody = new \Google_Service_Sheets_ValueRange([
+					    'range' => $updateRange,
+					    'majorDimension' => 'ROWS',
+					    'values' => ['values' => $lokasi],
+					]); //range I2 akan di isi tanggal jika anda ingin mengisi dengan yang lain tinggal ganti date('c') dengan data yang anda inginkan
+
+					    $sheets->spreadsheets_values->update(
+					    $spreadsheetId,
+					    $updateRange,
+					    $updateBody,
+					    ['valueInputOption' => 'USER_ENTERED']
+					);
 
 					?>
 					<script type="text/javascript">
