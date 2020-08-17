@@ -14,7 +14,7 @@
     		<div class="form-group">
     			<label>LatLng</label>
     			<input type="text" name="latlng" id="latlng" class="form-control" readonly> 
-          <input type="text" name="jarak" id="jarak">
+          <input type="hidden" name="jarak" id="jarak">
     		</div>
     		<div class="form-group">
     			<label>Lokasi</label>
