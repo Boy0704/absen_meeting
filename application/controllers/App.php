@@ -347,7 +347,7 @@ class App extends CI_Controller {
 					$data = [];
 
 					$spreadsheetId = '1hA7D-YmmKi76HetqRziNFpt7VLde6jGeGQNCc3Y0tH8'; // ubah spreadsheetId dengan spreadsheetID anda
-					$range = 'Sheet1!A2:B'; // variable untuk menyimpan range yang akan di baca, A3:H artinya, data yang akan di baca adalah kolom A sampai H dimulai dari baris 3
+					$range = 'Sheet1!A1:B'; // variable untuk menyimpan range yang akan di baca, A3:H artinya, data yang akan di baca adalah kolom A sampai H dimulai dari baris 3
 					$rows = $sheets->spreadsheets_values->get($spreadsheetId, $range, ['majorDimension' => 'ROWS']);
 					if (isset($rows['values'])) {
 					    $currentRow = 1; //variable untuk menentukan baris ke
@@ -542,7 +542,7 @@ class App extends CI_Controller {
 					$data = [];
 
 					$spreadsheetId = '1hA7D-YmmKi76HetqRziNFpt7VLde6jGeGQNCc3Y0tH8'; // ubah spreadsheetId dengan spreadsheetID anda
-					$range = 'Sheet1!A2:B'; // variable untuk menyimpan range yang akan di baca, A3:H artinya, data yang akan di baca adalah kolom A sampai H dimulai dari baris 3
+					$range = 'Sheet1!A1:B'; // variable untuk menyimpan range yang akan di baca, A3:H artinya, data yang akan di baca adalah kolom A sampai H dimulai dari baris 3
 					$rows = $sheets->spreadsheets_values->get($spreadsheetId, $range, ['majorDimension' => 'ROWS']);
 					if (isset($rows['values'])) {
 					    $currentRow = 1; //variable untuk menentukan baris ke
