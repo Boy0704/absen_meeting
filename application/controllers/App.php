@@ -272,6 +272,16 @@ class App extends CI_Controller {
 
 	public function simpan_absensi()
 	{
+		include '../vendor/autoload.php';
+		//set API drive
+		putenv("GOOGLE_APPLICATION_CREDENTIALS=service_akun_lagi.json");
+		$client = new Google_Client();
+		$client->setApplicationName("Client_Library_Examples");
+		$client->addScope("https://www.googleapis.com/auth/drive");
+		$client->useApplicationDefaultCredentials();
+		$service = new Google_Service_Drive($client);
+		// ----------------- //
+
 		date_default_timezone_set('Asia/Jakarta');
     	$jam = date('H:i:s');
     	$tgl = date('Y-m-d');
@@ -308,6 +318,21 @@ class App extends CI_Controller {
 					<?php
 				} else {
 					$this->db->insert('absen_datang', $data);
+
+					//proses upload ke drive api
+					$file = new Google_Service_Drive_DriveFile(array(
+			            'parents' => array('1LNsjcAoCaDujFYgpyjx5hlDcmw44OptY')
+			        ));
+			        // set nama file di Google Drive disesuaikan dg nama file aslinya
+			        $file->setName($this->session->userdata('nama').' '.date('d-m-Y H:i:s'));
+			        // proses upload file ke Google Drive dg multipart
+			        $result = $service->files->create($file, array(
+			            'data' => file_get_contents($_FILES["photo"]["tmp_name"]),
+			            'mimeType' => 'application/octet-stream',
+			            'uploadType' => 'multipart'));
+
+			        /// ----------------- ///
+
 					?>
 					<script type="text/javascript">
 						alert('anda berhasil absen');
@@ -352,6 +377,21 @@ class App extends CI_Controller {
 					<?php
 				} else {
 					$this->db->insert('absen_pulang', $data);
+
+					//proses upload ke drive api
+					$file = new Google_Service_Drive_DriveFile(array(
+			            'parents' => array('1LNsjcAoCaDujFYgpyjx5hlDcmw44OptY')
+			        ));
+			        // set nama file di Google Drive disesuaikan dg nama file aslinya
+			        $file->setName($this->session->userdata('nama').' '.date('d-m-Y H:i:s'));
+			        // proses upload file ke Google Drive dg multipart
+			        $result = $service->files->create($file, array(
+			            'data' => file_get_contents($_FILES["photo"]["tmp_name"]),
+			            'mimeType' => 'application/octet-stream',
+			            'uploadType' => 'multipart'));
+
+			        /// ----------------- ///
+
 					?>
 					<script type="text/javascript">
 						alert('anda berhasil absen');

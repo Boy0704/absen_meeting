@@ -4,7 +4,13 @@
     </div>
     <div class="panel-body">
     	<div id="map" style="width: 100%; height: 200px;"></div>
-    	<form action="app/simpan_absensi" method="POST">
+    	<form action="app/simpan_absensi" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <center>
+            <img id="previewImg" src="https://img.favpng.com/18/23/24/computer-icons-user-profile-portable-network-graphics-vector-graphics-png-favpng-31THvNXgnrmpMkkCSfpupKPpH.jpg" alt="Placeholder" style="width: 100px;">
+          </center>
+          <input type="file" accept="image/*" capture="camera" name="photo" onchange="previewFile(this);" required>
+        </div>
     		<div class="form-group">
     			<label>LatLng</label>
     			<input type="text" name="latlng" id="latlng" class="form-control" readonly> 
@@ -22,6 +28,22 @@
     <div class="panel-footer"></div>
   </div>
 
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script>
+        function previewFile(input){
+            var file = $("input[type=file]").get(0).files[0];
+     
+            if(file){
+                var reader = new FileReader();
+     
+                reader.onload = function(){
+                    $("#previewImg").attr("src", reader.result);
+                }
+     
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 
     <script>
       // Note: This example requires that you consent to location sharing when
