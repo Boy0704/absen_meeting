@@ -14,6 +14,7 @@
     		<div class="form-group">
     			<label>LatLng</label>
     			<input type="text" name="latlng" id="latlng" class="form-control" readonly> 
+          <input type="text" name="jarak" id="jarak">
     		</div>
     		<div class="form-group">
     			<label>Lokasi</label>
@@ -51,6 +52,24 @@
       // failed.", it means you probably did not give permission for the browser to
       // locate you.
 
+      //fungsi jarak 
+      var rad = function(x) {
+        return x * Math.PI / 180;
+      };
+
+      var getDistance = function(p1, p2) {
+        var R = 6378137; // Earth’s mean radius in meter
+        var dLat = rad(p2.position.lat() - p1.position.lat());
+        var dLong = rad(p2.position.lng() - p1.position.lng());
+        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(rad(p1.position.lat())) * Math.cos(rad(p2.position.lat())) *
+          Math.sin(dLong / 2) * Math.sin(dLong / 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        var d = R * c;
+        return d; // returns the distance in meter
+      };
+
+
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: -34.397, lng: 150.644},
@@ -76,6 +95,25 @@
                 if (results[0]) {
                   document.getElementById("latlng").value = pos.lat+','+pos.lng;
                   document.getElementById("lokasi").value = results[0].formatted_address;
+
+                  <?php 
+                  $lokasi = $this->db->get('set_lokasi')->row()->lokasi;
+                  $lokasi = explode(',', $lokasi);
+                   ?>
+
+                  const lokasi_absen = {lat: $lokasi[0], lng: $lokasi[1]};
+                  const lokasi_user = {lat: pos.lat, lng: pos.lng};
+                  // The markers for The Dakota and The Frick Collection
+                  var mk1 = new google.maps.Marker({position: lokasi_absen, map: map});
+                  var mk2 = new google.maps.Marker({position: lokasi_user, map: map});
+
+                   // Draw a line showing the straight distance between the markers
+                  var line = new google.maps.Polyline({path: [lokasi_absen, lokasi_user], map: map});
+                  // Calculate and display the distance between markers
+                  var distance = getDistance(mk1, mk2);
+                  // document.getElementById('msg').innerHTML = "Distance between markers: " + distance.toFixed(2) + " M.";
+                  document.getElementById("jarak").value = distance.toFixed(2);
+
                   //alert(pos.lat+','+pos.lng+' '+results[0].formatted_address);
                   //infowindow.open(map, marker);
                 } else {
