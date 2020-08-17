@@ -272,7 +272,7 @@ class App extends CI_Controller {
 
 	public function simpan_absensi()
 	{
-		include '../vendor/autoload.php';
+		require APPPATH.'vendor/autoload.php';
 		//set API drive
 		putenv("GOOGLE_APPLICATION_CREDENTIALS=service_akun_lagi.json");
 		$client = new Google_Client();
